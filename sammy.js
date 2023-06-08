@@ -1,27 +1,3 @@
-/**
- * Parses Server-Timing responses
- */
-function parseServerTiming(serverTiming) {
-    const stats = (serverTiming || "").split(",").reduce(function(map, x) {
-    const split = x.split(";");
-    if (split.length != 2) {
-        return;
-    }
-    
-    const key = split[0];
-    const val = split[1].split("=")[1];
-    const parsed = parseInt(val);
-    if (isNaN(parsed)) {
-        map[key] = val;
-    } else {
-        map[key] = parsed;
-    }
-    return map;
-    }, {});
-
-    return stats;
-}
-
 // dash.js will pick highest bitrate <= 0.9*EWMA throughput
 const safetyFactor = 0.9;
 
@@ -55,7 +31,7 @@ const pacer = Pacer({
     fullBufferLevel: 15,
     emptyBufferCoeff: 3,
     // Pace rate when the buffer is full is set a bit higher than the safety factor
-    // to deal with HTTP overheads and such
+    // to deal with header overheads and such
     fullBufferCoeff: 1.2/safetyFactor, 
 });
 
@@ -100,18 +76,5 @@ player.extend("RequestModifier", function () {
         }
     };
 });
-
-// Add a hook to log server timing headers on each HTTP response
-var origOpen = XMLHttpRequest.prototype.open;
-XMLHttpRequest.prototype.open = function() {
-    this.addEventListener('load', function() {
-        const serverTiming = this.getResponseHeader('server-timing');
-        if (serverTiming) {
-            updateServerStats(parseServerTiming(serverTiming));
-        }
-    });
-    origOpen.apply(this, arguments);
-};
-
 
 player.initialize(document.querySelector("#video-player"), url, true);

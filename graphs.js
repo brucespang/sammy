@@ -1,4 +1,3 @@
-
 Plotly.newPlot('client-graph', [
     {
         y: [],
@@ -125,3 +124,40 @@ function updateServerStats(serverTiming) {
     Plotly.extendTraces('rtt-graph', {y: [[serverTiming['tcpi_rtt']/1000. || null]]}, [0]);
     Plotly.extendTraces('retrans-graph', {y: [[serverTiming['tcpi_total_retrans'] || null]]}, [0]);
 }
+
+// Parses Server-Timing responses
+function parseServerTiming(serverTiming) {
+    const stats = (serverTiming || "").split(",").reduce(function(map, x) {
+    const split = x.split(";");
+    if (split.length != 2) {
+        return;
+    }
+    
+    const key = split[0];
+    const val = split[1].split("=")[1];
+    const parsed = parseInt(val);
+    if (isNaN(parsed)) {
+        map[key] = val;
+    } else {
+        map[key] = parsed;
+    }
+    return map;
+    }, {});
+
+    return stats;
+}
+
+// Add a hook to log server timing headers on each HTTP response
+var origOpen = XMLHttpRequest.prototype.open;
+XMLHttpRequest.prototype.open = function() {
+    this.addEventListener('load', function() {
+        const serverTiming = this.getResponseHeader('server-timing');
+        if (serverTiming) {
+            updateServerStats(parseServerTiming(serverTiming));
+        }
+    });
+    origOpen.apply(this, arguments);
+};
+
+
+player.initialize(document.querySelector("#video-player"), url, true);
