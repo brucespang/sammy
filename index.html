@@ -1,0 +1,140 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Example Sammy implementation</title>
+        <link rel="stylesheet" href="main.css" />
+        <style>
+            body {
+                font-size: 20px;
+            }
+
+            .wrapper {
+                max-width: calc(1100px - (2em * 2))
+            }
+
+            a, a:visited, a:hover {
+                color: #B84D88;
+            }
+
+            .site-nav .page-link {
+                color: #B84D88;
+            }
+
+            h2.tagline {
+                padding-top: 0.5em;
+                color: #555;
+                font-size: 2em;
+                clear: both;
+            }
+                   
+            .page-content {
+                padding-top: 0;
+            }
+
+            .right {
+                float: right;
+            }
+
+            .pad-top {
+                margin-top: 1em;
+            }
+
+            .button, .button:visited {
+                background: #B84D88;
+                border: 3px solid #B84D88;
+                color: #fdfdfd;
+                padding: 0.5em;
+                border-radius: 0.5em;
+            }
+
+            .button:hover {
+                background: #fdfdfd;
+                border: 3px solid #B84D88;
+                color: #B84D88;
+                text-decoration: none;
+            }
+
+            #video-container {
+                width: 640px;
+                margin: 0 auto;
+            }
+
+            video {
+                width: 640px;
+                height: 360px;
+            }
+        </style>
+    </head>
+    <body>
+        <header class="site-header">
+            <div class="wrapper">
+                <h1 class="site-title"><a href="/">Sammy</a></h1>
+            
+                <nav class="site-nav">
+                    <a class="page-link" href="/sammy.pdf">Research Paper</a>
+                    <a class="button" href="mailto:sammy@brucespang.com">Contact</a>
+                </nav>
+                <h2 class="tagline">Making video traffic a friendlier internet neighbor</h2>
+            </div>
+      </header>
+
+      <main class="page-content" aria-label="Content">
+        <div class="wrapper">
+            <h2>About</h2>
+            <p>
+                Video streaming traffic today takes up <a href="https://www.sandvine.com/global-internet-phenomena-report-2022">60-75% of all bytes sent on the internet</a>.
+                Sammy is a joint project between Netflix and Stanford researchers to make video traffic friendlier to neighboring applications sharing the same networks.
+            </p>
+            <p>
+                Video traffic today is bursty. Every few seconds, video traffic switches between a period of sending data as fast as possible and a period of silence.
+                This burstiness has consequences on internet congestion&mdash;causing queueing delay and packet loss as <a href="https://tcpcc.systemsapproach.org/">congestion control algorithms</a> try to send as fast as possible into the network without causing packet loss.
+            </p>
+            <p>
+                Sammy aims to smooth out video traffic and reduce video throughput below the capacity of typical home networks. By reducing video throughput, Sammy can avoid congestion completely&mdash;eliminating queueing delay and packet loss, and making more bandwidth available for neighboring traffic.
+                In experiments run at Netflix, Sammy reduces chunk throughput (how fast Netflix sends data, when it is sending data) by more than 60%, without reducing video quality of experience.
+            </p>
+            <p>For more information, see the research paper published at SIGCOMM 2023: <a class="button" href="/sammy.pdf">Research Paper</a>
+
+            <h2>Dash.js Demo</h2>
+            
+            <a class="button" href="https://github.com/brucespang/sammy">View on Github</a>
+            
+            <p class="pad-top">
+                The following is a demo of Sammy running with an unmodified version of dash.js.
+                Sammy works by using information about the video to pick a <em>pace rate</em>, or upper limit on how fast the server will send.
+            </p>
+            <p>
+                For the first few requests, the video buffer is empty and Sammy picks a high pace rate and downloads video quickly in order to build up a buffer.
+                As the buffer fills up, Sammy picks lower and lower pace rates, down to close to the highest bitrate of the video.
+                Note how the throughput the video client measures from the network decreases to match the pace rate as more and more chunks are downloaded.
+            </p>
+            <p>
+                <b>Setup:</b> We use <a href="https://fastly.com">Fastly</a> as a CDN, which has built-in <a href="https://developer.fastly.com/reference/vcl/variables/client-connection/client-socket-pace/">support for pacing</a>. We pick a pace rate 3x higher than chunk bitrates when the buffer is empty, and 1.5x higher when the buffer is full.
+                We make no distinction between playing and not playing states, so you can see pacing take effect without watching the video.
+            </p>
+            <p>
+                <b>Note on QoE for dash.js:</b> One of Sammy's main contributions is that it reduces chunk throughputs by 60%, while maintaining the QoE as Netflix's existing production algorithm.
+                In this demo, we are only showing how the ABR algorithm can pick pace rates, and that the end-to-end pacing functionality works.
+                We make no claims about QoE parity to dash.js today&mdash;achieving QoE parity is left as an exercise to the reader (but interested readers should reach out to the <a href="https://brucespang.com">first author</a>, who would be happy to give advice).
+            </p>
+            <div id="video-container">
+                <video id="video-player" controls></video>
+            </div>
+            <div id="graphs">
+                <div id="client-graph"></div>
+                <div id="buffer-graph"></div>
+                <div id="rtt-graph"></div>
+                <div id="retrans-graph"></div>
+            </div>
+
+        </div>
+      </main>
+
+        <main class="page-content">
+        </main>
+        <script src="http://cdn.dashjs.org/v4.7.0/dash.all.min.js"></script>
+        <script src="https://cdn.plot.ly/plotly-2.20.0.min.js"></script>
+        <script src="graphs.js"></script>
+        <script src="sammy.js"></script>
+    </body>
+</html>
