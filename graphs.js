@@ -158,6 +158,3 @@ XMLHttpRequest.prototype.open = function() {
     });
     origOpen.apply(this, arguments);
 };
-
-
-player.initialize(document.querySelector("#video-player"), url, true);
