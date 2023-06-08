@@ -2,7 +2,7 @@
 const safetyFactor = 0.9;
 
 // Set up the player
-var url = "http://video.brucespang.com.global.prod.fastly.net/akamai/bbb_30fps/bbb_30fps.mpd";
+var url = "https://video.brucespang.com/akamai/bbb_30fps/bbb_30fps.mpd";
 var player = dashjs.MediaPlayer().create();
 player.updateSettings({
     streaming: {
