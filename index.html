@@ -109,7 +109,7 @@
                 Note how the throughput the video client measures from the network decreases to match the pace rate as more and more chunks are downloaded.
             </p>
             <p>
-                <b>Setup:</b> We use <a href="https://fastly.com">Fastly</a> as a CDN, which has built-in <a href="https://developer.fastly.com/reference/vcl/variables/client-connection/client-socket-pace/">support for pacing</a>. We pick a pace rate 3x higher than chunk bitrates when the buffer is empty, and 1.5x higher when the buffer is full.
+                <b>Setup:</b> We use <a href="https://fastly.com">Fastly</a> as a CDN, which has built-in <a href="https://developer.fastly.com/reference/vcl/variables/client-connection/client-socket-pace/">support for pacing</a>. We pick a pace rate 3x higher than the maximum of all encoding bitrates when the buffer is empty, and 1.5x higher when the buffer is full.
                 We make no distinction between playing and not playing states, so you can see pacing take effect without watching the video.
             </p>
             <p>
