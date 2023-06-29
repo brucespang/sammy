@@ -78,3 +78,4 @@ player.extend("RequestModifier", function () {
 });
 
 player.initialize(document.querySelector("#video-player"), url, true);
+document.querySelector("#video-player").muted = true;
