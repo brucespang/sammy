@@ -100,13 +100,7 @@ Plotly.newPlot('rtt-graph', [
     }
 }, {responsive: true});
 
-Plotly.newPlot('retrans-graph', [
-    {
-        y: [],
-        mode: 'lines',
-        line: {color: '#622194', width: 3}
-    },
-], {
+Plotly.newPlot('retrans-graph', [], {
     title: 'Server-side cumulative retransmitted packets',
     xaxis: {
         title: 'Chunk Index',
@@ -120,9 +114,18 @@ Plotly.newPlot('retrans-graph', [
     }
 }, {responsive: true});
 
+const connIds = {};
+var chunkIdx = 0;
 function updateServerStats(serverTiming) {
+    const addr = serverTiming['client-ip'] + ":" + serverTiming['client-port'];
+    if (connIds[addr] === undefined) {
+        connIds[addr] = Object.keys(connIds).length;
+        Plotly.addTraces('retrans-graph', {x: [], y: [], name: 'Conn. ' + addr}, [connIds[addr]])
+    }
+    const connId = connIds[addr];
     Plotly.extendTraces('rtt-graph', {y: [[serverTiming['tcpi_rtt']/1000. || null]]}, [0]);
-    Plotly.extendTraces('retrans-graph', {y: [[serverTiming['tcpi_total_retrans'] || null]]}, [0]);
+    Plotly.extendTraces('retrans-graph', {x: [[chunkIdx]],  y: [[serverTiming['tcpi_total_retrans'] || null]]}, [connId]);
+    chunkIdx += 1;
 }
 
 // Parses Server-Timing responses
@@ -136,7 +139,7 @@ function parseServerTiming(serverTiming) {
     const key = split[0];
     const val = split[1].split("=")[1];
     const parsed = parseInt(val);
-    if (isNaN(parsed)) {
+    if (isNaN(parsed) || ["client-ip"].includes(key)) {
         map[key] = val;
     } else {
         map[key] = parsed;

@@ -18,7 +18,9 @@ sub vcl_deliver {
   
   set resp.http.Pacing-Rate-KBps = client.socket.pace;
   set resp.http.Server-Timing =
-    "time-start-msec;dur=" time.start.msec
+    "client-ip;desc=" client.ip
+    ",client-port;desc=" client.port
+    ",time-start-msec;dur=" time.start.msec
     ",time-elapsed;dur=" time.elapsed.msec
     ",fastly-pop;desc=" server.datacenter
     ",hit-state;desc=" fastly_info.state
