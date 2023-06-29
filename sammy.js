@@ -28,8 +28,8 @@ function Pacer(config) {
 }
 
 const pacer = Pacer({
-    fullBufferLevel: 15,
-    emptyBufferCoeff: 3,
+    fullBufferLevel: 3.2,
+    emptyBufferCoeff: 2.8,
     // Pace rate when the buffer is full is set a bit higher than the safety factor
     // to deal with header overheads and such
     fullBufferCoeff: 1.2/safetyFactor, 
