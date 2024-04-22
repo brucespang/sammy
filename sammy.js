@@ -62,7 +62,7 @@ function Pacer(config) {
     // Returns desired pacing rate in KBps
     function getPacingRate(bufferLevel, highestBitrate) {
         if (!$("#enable-sammy").prop('checked')) {
-            return undefined;
+            return 1000000;
         }
 
         const config = getConfig();
@@ -114,7 +114,7 @@ player.extend("RequestModifier", function () {
                 throughput: throughput,
                 selectedBitrate: selectedBitrate,
                 highestBitrate: highestBitrate,
-                paceRate: paceRate,
+                paceRate: $("#enable-sammy").prop('checked') ? paceRate : undefined,
             })
 
             return xhr;
