@@ -37,7 +37,7 @@ $('#full-buffer-slider').slider({
     // Pace rate when the buffer is full.
     // dash.js will pick highest bitrate <= 0.9*EWMA throughput, so ideally this would be 1/safetyFactor=1.1.
     // But set it a bit higher to deal with header overheads and such.
-    value: 1.5,
+    value: 1.6,
     min: 0,
     max: 5,
     step: 0.1,
