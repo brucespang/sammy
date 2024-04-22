@@ -1,4 +1,4 @@
-// dash.js will pick highest bitrate <= 0.9*EWMA throughput
+// dash.js will pick the highest bitrate <= 0.9*ewma
 const safetyFactor = 0.9;
 
 // Set up the player
@@ -8,14 +8,61 @@ player.updateSettings({
     streaming: {
         abr: {
             ABRStrategy: "abrThroughput",
-            bandwidthSafetyFactor: safetyFactor
+            bandwidthSafetyFactor: safetyFactor,
+            additionalAbrRules: {
+                insufficientBufferRule: false,
+                switchHistoryRule: false,
+                droppedFramesRule: false,
+                abandonRequestsRule: false
+            }
         }
     }
 });
 
+// Set up the controls
+$('#empty-buffer-slider').slider({
+    value: 2.8,
+    min: 0,
+    max: 5,
+    step: 0.1,
+    create: function() {
+        $('#empty-handle').text( $( this ).slider( "value" ) + "x" );
+    },
+    slide: function( event, ui ) {
+        $('#empty-handle').text( ui.value + "x" );
+    }
+});
+
+$('#full-buffer-slider').slider({
+    // Pace rate when the buffer is full.
+    // dash.js will pick highest bitrate <= 0.9*EWMA throughput, so ideally this would be 1/safetyFactor=1.1.
+    // But set it a bit higher to deal with header overheads and such.
+    value: 1.5,
+    min: 0,
+    max: 5,
+    step: 0.1,
+    create: function() {
+        $('#full-handle').text( $( this ).slider( "value" ) + "x" );
+    },
+    slide: function( event, ui ) {
+        $('#full-handle').text( ui.value + "x" );
+    }
+});
+
+// Set the pacer
 function Pacer(config) {
+    function getConfig() {
+        return {
+            fullBufferLevel: 3.2,
+            emptyBufferCoeff: $( "#empty-buffer-slider" ).slider( "value" ),
+            fullBufferCoeff: $( "#full-buffer-slider" ).slider( "value" ),
+        }
+    }
+
     // Returns desired pacing rate in KBps
     function getPacingRate(bufferLevel, highestBitrate) {
+        const config = getConfig();
+
         const bufferFrac = Math.min(bufferLevel / config.fullBufferLevel, 1);
         const multiplier = config.fullBufferCoeff * bufferFrac + config.emptyBufferCoeff * (1 - bufferFrac);
         
@@ -27,13 +74,8 @@ function Pacer(config) {
     }
 }
 
-const pacer = Pacer({
-    fullBufferLevel: 3.2,
-    emptyBufferCoeff: 2.8,
-    // Pace rate when the buffer is full is set a bit higher than the safety factor
-    // to deal with header overheads and such
-    fullBufferCoeff: 1.2/safetyFactor, 
-});
+
+const pacer = Pacer();
 
 // When issuing a chunk request, pick a pace rate and add a header to ask the CDN to pace
 player.extend("RequestModifier", function () {
@@ -59,6 +101,8 @@ player.extend("RequestModifier", function () {
             if (paceRate) {
                 xhr.setRequestHeader('Pacing-Rate-KBps', parseInt(paceRate/8));
             }
+
+            xhr.setRequestHeader('CC-Algorithm', $('#cc-algorithm').find(":selected").val());
 
             // Update the graphs
             updateClientStats({

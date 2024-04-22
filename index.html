@@ -1,69 +1,9 @@
 <!doctype html>
 <html>
     <head>
-        <title>Sammy | Example implementation</title>
+        <title>Sammy: Making video traffic a friendlier internet neighbor | Example implemenation</title>
         <link rel="stylesheet" href="main.css" />
-        <style>
-            body {
-                font-size: 20px;
-            }
-
-            .wrapper {
-                max-width: calc(1100px - (2em * 2))
-            }
-
-            a, a:visited, a:hover {
-                color: #B84D88;
-            }
-
-            .site-nav .page-link {
-                color: #B84D88;
-            }
-
-            h2.tagline {
-                padding-top: 0.5em;
-                color: #555;
-                font-size: 2em;
-                clear: both;
-            }
-                   
-            .page-content {
-                padding-top: 0;
-            }
-
-            .right {
-                float: right;
-            }
-
-            .pad-top {
-                margin-top: 1em;
-            }
-
-            .button, .button:visited {
-                background: #B84D88;
-                border: 3px solid #B84D88;
-                color: #fdfdfd;
-                padding: 0.5em;
-                border-radius: 0.5em;
-            }
-
-            .button:hover {
-                background: #fdfdfd;
-                border: 3px solid #B84D88;
-                color: #B84D88;
-                text-decoration: none;
-            }
-
-            #video-container {
-                width: 640px;
-                margin: 0 auto;
-            }
-
-            video {
-                width: 640px;
-                height: 360px;
-            }
-        </style>
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     </head>
     <body>
         <header class="site-header">
@@ -120,7 +60,39 @@
             <div id="video-container">
                 <video id="video-player" controls></video>
             </div>
+            <div id="controls">
+                <h3>Pacing controls</h3>
+                <div id="empty-controls" class="controls">
+                    <h4>Pace rate for empty buffer</h4>
+                    <p>Sammy will pace at this value times the max bitrate when the buffer is empty.</p>
+                    <p>For example, if this is set to 2.8, Sammy will pace at 2.8x the max bitrate when the buffer is empty</p>
+                    <div id="empty-buffer-slider">
+                        <div id="empty-handle" class="ui-slider-handle handle"></div>
+                    </div>
+                </div>
+                <div id="full-controls" class="controls">
+                    <h4>Pace rate for full buffer</h4>
+                    <p>Sammy will pace at this value times the max bitrate when the buffer is full.</p>
+                    <p>If this is set lower than about 1.4x, the lower throughput will cause dash.js to pick lower bitrates.<p>
+                    <div id="full-buffer-slider">
+                        <div id="full-handle" class="ui-slider-handle handle"></div>
+                    </div>
+                </div>
+                <div id="cc-controls" class="controls">
+                    <h4>Congestion Control Algorithm</h4>
+                    <p>The server will use this congestion control algorithm to send data.</p>
+                    <p>BBR does pacing, but it paces at a much higher rate than Sammy. You should see no large decrease in throughput with BBR.</p>
+                    <select id="cc-algorithm">
+                        <option value="cubic">Cubic</option>
+                        <option value="bbr">BBR</option>
+                        <option value="reno">Reno</option>
+                    </select>
+                </div>
+            </div>
             <div id="graphs">
+                <h3>Performance graphs</h3>
+                <p>Note: if throughput is very high, you may need to disable the cache. In Chrome, you can do this at the top of the inspector's network tab</p>
+                <div id="pace-rate-graph"></div>
                 <div id="client-graph"></div>
                 <div id="buffer-graph"></div>
                 <div id="rtt-graph"></div>
@@ -132,6 +104,8 @@
 
         <script src="https://cdn.dashjs.org/v4.7.0/dash.all.min.js"></script>
         <script src="https://cdn.plot.ly/plotly-2.20.0.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
         <script src="graphs.js"></script>
         <script src="sammy.js"></script>
     </body>

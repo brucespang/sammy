@@ -36,7 +36,7 @@ Plotly.newPlot('client-graph', [
     yaxis: {
         title: 'Mbps',
         rangemode: 'tozero',
-        showline: false
+        showline: false,
     }
 }, {responsive: true});
 

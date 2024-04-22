@@ -11,6 +11,10 @@ sub vcl_recv {
 sub vcl_deliver {
   #FASTLY deliver;
 
+  if (req.http.CC-Algorithm) {
+    set client.socket.congestion_algorithm = req.http.CC-Algorithm;
+  }
+
   set resp.http.Access-Control-Allow-Origin = "*";
   set resp.http.Access-Control-Allow-Headers = "*";
   set resp.http.Access-Control-Expose-Headers = "*";
