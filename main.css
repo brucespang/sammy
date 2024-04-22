@@ -61,9 +61,11 @@ video {
 }
 
 .controls {
-    width: 30%;
-    margin-right: 1.5%;
+    width: 24%;
+    margin-right: 1%;
     float: left;
+    font-size: 0.8em;
+    line-height: 1.5em;
 }
 
 .handle {
@@ -82,4 +84,8 @@ h3 {
 
 h4 {
     margin-top: 0.5em;
+}
+
+#enable-sammy {
+    transform: scale(2);
 }

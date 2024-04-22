@@ -63,30 +63,35 @@
             <div id="controls">
                 <h3>Pacing controls</h3>
                 <div id="empty-controls" class="controls">
+                    <h4>Enable Sammy?</h4>
+                    <input type="checkbox" id="enable-sammy" checked />
+                    <p>If Sammy is disabled, the congestion control algorithm will decide what throughput to send at. Throughput will likely be much higher than with Sammy.</p>
+                </div>
+                <div id="empty-controls" class="controls">
                     <h4>Pace rate for empty buffer</h4>
-                    <p>Sammy will pace at this value times the max bitrate when the buffer is empty.</p>
-                    <p>For example, if this is set to 2.8, Sammy will pace at 2.8x the max bitrate when the buffer is empty</p>
                     <div id="empty-buffer-slider">
                         <div id="empty-handle" class="ui-slider-handle handle"></div>
                     </div>
+                    <p>Sammy will pace at this value times the max bitrate when the buffer is empty.</p>
+                    <p>For example, if this is set to 2.8, Sammy will pace at 2.8x the max bitrate when the buffer is empty</p>
                 </div>
                 <div id="full-controls" class="controls">
                     <h4>Pace rate for full buffer</h4>
-                    <p>Sammy will pace at this value times the max bitrate when the buffer is full.</p>
-                    <p>If this is set lower than about 1.4x, the lower throughput will cause dash.js to pick lower bitrates.<p>
                     <div id="full-buffer-slider">
                         <div id="full-handle" class="ui-slider-handle handle"></div>
                     </div>
+                    <p>Sammy will pace at this value times the max bitrate when the buffer is full.</p>
+                    <p>If this is set lower than about 1.4x, the lower throughput will cause dash.js to pick lower bitrates.<p>
                 </div>
                 <div id="cc-controls" class="controls">
-                    <h4>Congestion Control Algorithm</h4>
-                    <p>The server will use this congestion control algorithm to send data.</p>
-                    <p>BBR does pacing, but it paces at a much higher rate than Sammy. You should see no large decrease in throughput with BBR.</p>
+                    <h4>Congestion Control</h4>
                     <select id="cc-algorithm">
                         <option value="cubic">Cubic</option>
                         <option value="bbr">BBR</option>
                         <option value="reno">Reno</option>
                     </select>
+                    <p>The server will use this congestion control algorithm to send data.</p>
+                    <p>BBR does pacing, but it paces at a much higher rate than Sammy. You should see no large decrease in throughput with BBR.</p>
                 </div>
             </div>
             <div id="graphs">

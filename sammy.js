@@ -61,6 +61,10 @@ function Pacer(config) {
 
     // Returns desired pacing rate in KBps
     function getPacingRate(bufferLevel, highestBitrate) {
+        if (!$("#enable-sammy").prop('checked')) {
+            return undefined;
+        }
+
         const config = getConfig();
 
         const bufferFrac = Math.min(bufferLevel / config.fullBufferLevel, 1);
