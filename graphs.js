@@ -87,7 +87,7 @@ Plotly.newPlot('rtt-graph', [
         line: {color: '#622194', width: 3}
     },
 ], {
-    title: 'Server measured RTT',
+    title: 'Smoothed RTT, from server-side TCP_INFO',
     xaxis: {
         title: 'Chunk Index',
         showgrid: false,
