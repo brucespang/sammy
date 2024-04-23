@@ -20,8 +20,12 @@ player.updateSettings({
 });
 
 // Set up the controls
+const urlParams = new URLSearchParams(window.location.search);
+$("#enable-sammy").prop("checked", urlParams.get('sammy') !== "false");
+$("#cc-algorithm").val(urlParams.get('cc') || 'cubic');
+
 $('#empty-buffer-slider').slider({
-    value: 2.8,
+    value: urlParams.get('empty') || 2.8,
     min: 0,
     max: 5,
     step: 0.1,
@@ -37,7 +41,7 @@ $('#full-buffer-slider').slider({
     // Pace rate when the buffer is full.
     // dash.js will pick highest bitrate <= 0.9*EWMA throughput, so ideally this would be 1/safetyFactor=1.1.
     // But set it a bit higher to deal with header overheads and such.
-    value: 1.6,
+    value: urlParams.get('full') || 1.6,
     min: 0,
     max: 5,
     step: 0.1,
